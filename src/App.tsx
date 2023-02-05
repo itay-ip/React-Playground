@@ -1,25 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { CustomFlow } from "./react-flow/custom-flow";
+import { Flow } from "./react-flow/flow";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  return ( 
+    <>
+      <div>
+        Hello, world!
+      </div>
+      <div style={{backgroundColor: 'gray', position: 'fixed',width: '100%', height: '90%'}}>
+        {/* <Flow /> */}
+        <CustomFlow />
+      </div>
+      <div style={{position: 'fixed', bottom: 0}}>
+        End
+      </div>
+    </> 
   );
 }
 
