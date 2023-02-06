@@ -1,93 +1,110 @@
 import { useState, useEffect, useCallback } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { v4 as uuidv4 } from 'uuid';
+// uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
 import { CustomNodeComponent } from './custom-node-component';
 
 const initBgColor = 'white';
 
-const connectionLineStyle = { stroke: '#fff' };
+const connectionLineStyle = { stroke: '#f00' };
 // const snapGrid = [20, 20];
 const nodeTypes = {
-  asdasd: CustomNodeComponent,
+  customNode: CustomNodeComponent,
 };
-
+/**
+ * 
+ * 
+ */
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 export const CustomFlow = () => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  // const [bgColor, setBgColor] = useState(initBgColor);
+
+  const onChange = (event: any) => {
+    console.log('onChange');
+    setNodes((nds) =>
+      nds.map((node) => {
+        console.log('Event: ',event.target.value);
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            content: event.target.value,
+          },
+        };
+      })
+    );
+  };
 
   useEffect(() => {
-    const onChange = (event: any) => {
-			console.log('onChange');
-      setNodes((nds) =>
-        nds.map((node) => {
-          console.log('Event: ',event.target.value);
-
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              content: event.target.value,
-            },
-          };
-        })
-      );
-    };
+    
 
     setNodes([
-    {
-      id: 'IVR_root',
-      type: 'asdasd',
-      data: { onChange: onChange, label: 'selectorNode', name: 'My Custom Node' },
-      style: { border: '1px solid #777', padding: 10},
-      position: { x: 0, y: 0 },
-      targetPosition: Position.Left,
-      sourcePosition: Position.Top
-    },
-		{
-      id: '3',
-      type: 'input',
-      data: { label: 'Output A' },
-      position: { x: 650, y: 25 },
-      sourcePosition: Position.Left,
-    },
-    {
-      id: '4',
-      type: 'output',
-      data: { label: 'Output B' },
-      position: { x: 650, y: 100 },
-      targetPosition: Position.Left,
-    }
+      { /* Initial root node */
+        id: 'IVR_root',
+        type: 'customNode',
+        data: { onChange: onChange, title: 'Root node', isRoot: true, nodeId: 'IVR_root' },
+        position: { x: 650, y: -50 },
+        targetPosition: Position.Left,
+      }
    ]);
 
     setEdges([]);
   }, []);
 
   const onConnect = useCallback(
-    (params: Edge<any> | Connection) =>
-      setEdges((eds) => addEdge({ ...params, /** animated: true, */ style: { stroke: '#fff' } }, eds)),
+    (params: Edge<any> | Connection) => {
+      console.log('onConnect');
+      setEdges((eds) => {
+        if (eds.some(edge => edge.sourceHandle === params.sourceHandle)) {
+          console.log('Do not connect - already has an edge');
+          return eds;
+        }
+        if (params.source === params.target) {
+          console.log('Do not connect - loop detected');
+          return eds;
+        }
+        return addEdge({ ...params, style: { stroke: '#f00' } }, eds);
+      })
+    },
     []
   );
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      style={{ background: '#000000' }}
-      nodeTypes={nodeTypes}
-      connectionLineStyle={connectionLineStyle}
-    //   snapGrid={snapGrid}
-      defaultViewport={defaultViewport}
-      fitView
-      attributionPosition="bottom-left"
-    >
-      <Controls />
-    </ReactFlow>
+    <>
+      <button 
+        onClick={() => {
+          const id = uuidv4();
+          setNodes((nodes) => [...nodes, {
+            id,
+            type: 'customNode',
+            position: { x: 450, y: -50 },
+            data: { onChange: onChange, title: 'כותרת', nodeId: id },
+            targetPosition: Position.Right,
+        }])
+      }}
+      >
+        הוספת תיבה חדשה
+      </button>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        style={{ background: '#000000' }}
+        nodeTypes={nodeTypes}
+        connectionLineStyle={connectionLineStyle}
+        defaultViewport={defaultViewport}
+        fitView
+        attributionPosition="bottom-left"
+      >
+        <Controls />
+      </ReactFlow>
+    </>
   );
 };
