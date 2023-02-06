@@ -1,5 +1,6 @@
-import { memo, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
+import { MyOption } from './my-option';
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
 	const [options, setOptions] = useState<string[]>([]);
@@ -15,10 +16,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 	}
 
 	const handleRemoveOption = (index: number) => {
-		// console.log('remove ', index);
-		// console.log(options.filter((opt, idx) => idx !== index));
 		setOptions(options.filter((opt, idx) => idx !== index));
-		// console.log(options);
 	}
 
   return (
@@ -51,32 +49,15 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 				
 				{
 					options.map((option, index) => {
-						// console.log(option, index);
 						return (
 							/**
 							 * Option component - which includes a text field and a handle
 							 */
-							<span key={index}>
-
-								<button onClick={() => handleRemoveOption(index)}>X</button>
-
-
-								<input className="nodrag" type="text" onChange={(e) => {
-									const newOpts = [...options];
-									newOpts[index] = e.target.value;
-									console.log(newOpts);
-									return setOptions(newOpts);
-								}} placeholder={'הטקסט שלך כאן'} value={options[index]}/>
-
-
-								<Handle
-									id={`${data.nodeId}-${index}`}
-									type="source"
-									position={Position.Left}
-									style={{ top: 'auto', bottom: 'auto', background: 'linear-gradient(225deg, #282fef, #33b1ff)' }}
-									isConnectable={isConnectable}
-								/>
-							</span>
+							<MyOption 
+								key={index}
+								handleId={`${data.nodeId}-${index}`} index={index}
+								onRemove={() => handleRemoveOption(index)}
+							/>
 						)
 					})
 				}
@@ -107,3 +88,26 @@ interface NodeData {
 	isRoot?: boolean,
 	nodeId: string
 }
+
+
+// <span key={index}>
+
+// 	<button onClick={() => handleRemoveOption(index)}>X</button>
+
+
+// 	<input className="nodrag" type="text" onChange={(e) => {
+// 		const newOpts = [...options];
+// 		newOpts[index] = e.target.value;
+// 		console.log(newOpts);
+// 		return setOptions(newOpts);
+// 	}} placeholder={'הטקסט שלך כאן'} value={options[index]}/>
+
+
+// 	<Handle
+// 		id={`${data.nodeId}-${index}`}
+// 		type="source"
+// 		position={Position.Left}
+// 		style={{ top: 'auto', bottom: 'auto', background: 'linear-gradient(225deg, #282fef, #33b1ff)' }}
+// 		isConnectable={isConnectable}
+// 	/>
+// </span>
