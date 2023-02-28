@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge } from 'reactflow';
+import { useEffect, useCallback, useRef } from 'react';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
 import { CustomNodeComponent } from './custom-node-component';
 import { CustomEdge } from './custom/custom-edge-component';
+import { Mashu } from './mashu';
 
 
 const connectionLineStyle = { stroke: '#9AD4F1' };
@@ -20,6 +21,8 @@ const edgeTypes = {
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 export const CustomFlow = () => {
+
+  // const reactFlowInstance = useReactFlow();
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -47,9 +50,9 @@ export const CustomFlow = () => {
 
     setNodes([
       { /* Initial root node */
-        id: 'IVR_root',
+        id: '00000000-0000-0000-0000-00000000abba',
         type: 'customNode',
-        data: { onChange: onChange, title: 'Root node', isRoot: true, nodeId: 'IVR_root' },
+        data: { onChange, title: 'כותרת', nodeId: '00000000-0000-0000-0000-00000000abba' },
         position: { x: 650, y: -50 },
         targetPosition: Position.Left,
       }
@@ -106,30 +109,33 @@ export const CustomFlow = () => {
             position: { x: 450, y: -50 },
             data: { onChange: onChange, title: 'כותרת', nodeId: id },
             targetPosition: Position.Right,
-        }])
+        }]);
       }}
       >
         הוספת תיבה חדשה
       </button>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onEdgeUpdate={onEdgeUpdate}
-        onEdgeUpdateStart={onEdgeUpdateStart}
-        onEdgeUpdateEnd={onEdgeUpdateEnd}
-        style={{ background: '#000000' }}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
-        connectionLineStyle={connectionLineStyle}
-        defaultViewport={defaultViewport}
-        fitView
-        attributionPosition="bottom-left"
-      >
-        <Controls />
-      </ReactFlow>
+      <ReactFlowProvider>
+      <Mashu />
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onEdgeUpdate={onEdgeUpdate}
+          onEdgeUpdateStart={onEdgeUpdateStart}
+          onEdgeUpdateEnd={onEdgeUpdateEnd}
+          style={{ background: '#F2F2F2' }}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          connectionLineStyle={connectionLineStyle}
+          defaultViewport={defaultViewport}
+          fitView
+          attributionPosition="bottom-left"
+        >
+          <Controls />
+        </ReactFlow>
+      </ReactFlowProvider>
     </>
   );
 };

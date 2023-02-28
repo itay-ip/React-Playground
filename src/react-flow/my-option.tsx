@@ -6,7 +6,7 @@ export const MyOption = ({ index, handleId, onRemove }: OptionProps) => {
 	const [val, setVal] = useState<string>();
 	return (
 		<>
-			<span key={index} style={{marginBlockStart: '8px'}}>
+			<span key={index} style={{marginBlockStart: '8px', display: 'flex', alignItems: 'center', alignContent: 'center'}}>
 
 				<button onClick={onRemove}>X</button>
 
@@ -22,7 +22,7 @@ export const MyOption = ({ index, handleId, onRemove }: OptionProps) => {
 				id={handleId}
 				type="source"
 				position={Position.Left}
-				style={{top: 'auto', background: 'linear-gradient(225deg, #282fef, #33b1ff)' }}
+				style={{top: 'auto', marginBlockStart: '8px', position: 'absolute', background: 'linear-gradient(225deg, #282fef, #33b1ff)' }}
 			/>
 			</span>
 		</>
