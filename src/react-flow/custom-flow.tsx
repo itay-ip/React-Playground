@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -177,7 +177,7 @@ export const CustomFlow = () => {
           onEdgeUpdate={onEdgeUpdate}
           onEdgeUpdateStart={onEdgeUpdateStart}
           onEdgeUpdateEnd={onEdgeUpdateEnd}
-          style={{ background: '#F2F2F2' }}
+          style={{ background: '#F2F2F2', direction: 'ltr' }}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           connectionLineStyle={connectionLineStyle}
@@ -187,6 +187,7 @@ export const CustomFlow = () => {
           /* --------- */
         >
           <Controls />
+          <MiniMap />
         </ReactFlow>
       </ReactFlowProvider>
     </>
