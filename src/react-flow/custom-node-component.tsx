@@ -1,12 +1,13 @@
-import { ChangeEvent, memo, useState } from 'react';
-import { Handle, Position } from 'reactflow';
+import { memo, useState } from 'react';
+import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
 import './node.css';
 
 const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
-	const [message, setNodeMessage] = useState<string>();
+	const [message, setNodeMessage] = useState<string>('');
 	const [options, setOptions] = useState<string[]>([]);
+	const nodeId = useNodeId();
 
 	const handleAddOption = () => {
 
@@ -22,6 +23,8 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 
 	const handleRemoveOption = (index: number) => {
 		data.options = [...options].filter((_, idx) => idx !== index);
+		console.log(data?.onRemove);
+		data?.onRemove(nodeId || '', nodeId + `-${index}`);
 		return setOptions(data.options);
 	}
 
@@ -29,21 +32,22 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 		data.messageContent = e.target.value;
 		setNodeMessage(data.messageContent);
 	}
-	{console.log(isRoot(data?.nodeId))}
+	
   return (
     <div className='node'>
 			
-      { !isRoot(data?.nodeId) && 
+      { !isRoot(data?.nodeId) &&
 				<Handle
 					id={data.nodeId + "-input"}
 					type="target"
 					position={Position.Right}
-					style={{ top: 20, zIndex: 1 , background: 'transparent', border: 'none' }}
+					style={{ top: 20, right: -2, zIndex: 1 , background: '#FFF', border: '1px solid black' }}
+					// className='targetHandle'
 					isConnectable={isConnectable}
 				/>
 			}
 			
-			<div /* Title */ className='header'>
+			<div /* Header */ className='header'>
 				<span style={{marginInlineStart: '4px'}}>{data.title}</span>
 				<div style={{transform: 'rotate(90deg)', marginInlineEnd: '12px'}}>...</div>
 			</div>
@@ -55,12 +59,12 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 						placeholder='הטקסט שלך כאן'
 						onChange={onMessageChange}
 					 	className='messageContent'
-						value={data.messageContent}
+						value={message || ''}
 					>
 					</input>
 				</div>
 
-				
+				{ options.length ? <div style={{alignSelf: 'flex-start'}}>אפשרויות</div> : undefined }
 				{
 					data.options?.map((option, index) => {
 						return (
@@ -68,6 +72,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 
 								<button onClick={() => handleRemoveOption(index)}>X</button>
 
+								<span>{index + 1}.</span>
 
 								<input className="nodrag" type="text" onChange={(e) => {
 									const newOpts = [...options];
@@ -81,7 +86,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 									id={`${data.nodeId}-${index}`}
 									type="source"
 									position={Position.Left}
-									style={{ top: 'auto', marginBlockStart: '8px', background: 'linear-gradient(225deg, #282fef, #33b1ff)'  }}
+									style={{ top: 'auto', marginBlockStart: '8px', background: COLOR  }}
 									isConnectable={isConnectable}
 								/>
 							</span>
@@ -92,11 +97,13 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 				{
 					options.length < 9 && 
 					<button 
-						onClick={handleAddOption}
-						style={{width: 'fit-content', marginBlockStart: '12px'}}
+							onClick={handleAddOption}
+							style={{width: 'fit-content', marginBlockStart: '12px', marginInline: '8px'}}
 					>
-					+
+						+
 					</button>
+					
+					
 				}
 				<span style={{boxShadow: 'inset 0px -1px 0px #BCC3CB', width: '90%', height: '1px', marginBlock: '16px'}}></span>
 				<span style={{display: 'flex', justifyContent: 'space-evenly', width: '90%', alignItems: 'center'}}>
@@ -113,15 +120,15 @@ const isRoot = (uuid: string) => {
 }
 
 
-interface CustomNodeProps {
+interface CustomNodeProps extends NodeProps {
 	data: NodeData,
-	isConnectable: boolean,
+	isConnectable: boolean
 }
 
 interface NodeData {
 	title: string,
 	messageContent: string,
-	onChange: (e: any) => {},
+	onRemove: (nodeId: string, portId: string) => void,
 	nodeId: string,
 	options: string[]
 }

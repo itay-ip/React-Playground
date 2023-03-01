@@ -6,8 +6,7 @@ export const Mashu = () => {
     <button onClick={
 			() => {
 				const obj = reactFlow.toObject();
-				graphToJson(obj.nodes, obj.edges);
-				console.log(obj.viewport);
+				console.log(obj);
 			}}>
 			שמור
 		</button>
@@ -15,13 +14,5 @@ export const Mashu = () => {
 }
 
 const graphToJson = (nodes: any, edges: any) => {
-	console.log('Nodes:');
-	console.log(nodes);
-	console.log('Edges:');
-	console.log(edges);
-
-
-	const nds = {
-
-	}
+	
 }
