@@ -1,12 +1,13 @@
-import { ChangeEvent, memo, useState } from 'react';
-import { Handle, Position } from 'reactflow';
+import { memo, useState } from 'react';
+import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
 import './custom-node.css';
 
 const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
-  const [message, setNodeMessage] = useState<string>();
-  const [options, setOptions] = useState<string[]>([]);
+	const [message, setNodeMessage] = useState<string>('');
+	const [options, setOptions] = useState<string[]>([]);
+	const nodeId = useNodeId();
 
   const handleAddOption = () => {
 
@@ -20,33 +21,36 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
     }
   }
 
-  const handleRemoveOption = (index: number) => {
-    data.options = [...options].filter((_, idx) => idx !== index);
-    return setOptions(data.options);
-  }
+	const handleRemoveOption = (index: number) => {
+		data.options = [...options].filter((_, idx) => idx !== index);
+		console.log(data?.onRemove);
+		data?.onRemove(nodeId || '', nodeId + `-${index}`);
+		return setOptions(data.options);
+	}
 
-  const onMessageChange = (e: any) => {
-    data.messageContent = e.target.value;
-    setNodeMessage(data.messageContent);
-  }
-  { console.log(isRoot(data?.nodeId)) }
+	const onMessageChange = (e: any) => {
+		data.messageContent = e.target.value;
+		setNodeMessage(data.messageContent);
+	}
+	
   return (
     <div className='node'>
-
-      {!isRoot(data?.nodeId) &&
-        <Handle
-          id={data.nodeId + "-input"}
-          type="target"
-          position={Position.Right}
-          style={{ top: 20, zIndex: 1, background: 'transparent', border: 'none' }}
-          isConnectable={isConnectable}
-        />
-      }
-
-      <div className='header'>
-        <span>{data.title}</span>
-        <span style={{ transform: 'rotate(90deg)' }}>...</span>
-      </div>
+			
+      { !isRoot(data?.nodeId) &&
+				<Handle
+					id={data.nodeId + "-input"}
+					type="target"
+					position={Position.Right}
+					style={{ top: 20, right: -2, zIndex: 1 , background: '#FFF', border: '1px solid black' }}
+					// className='targetHandle'
+					isConnectable={isConnectable}
+				/>
+			}
+			
+			<div /* Header */ className='header'>
+				<span style={{marginInlineStart: '4px'}}>{data.title}</span>
+				<div style={{transform: 'rotate(90deg)', marginInlineEnd: '12px'}}>...</div>
+			</div>
 
       <div className='body'>
         <textarea
@@ -92,7 +96,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
         <span style={{ boxShadow: 'inset 0px -1px 0px #BCC3CB', width: '90%', height: '1px', marginBlock: '16px' }}></span>
         <span style={{ display: 'flex', justifyContent: 'space-evenly', width: '90%', alignItems: 'center' }}>
           <input type="checkbox" />
-          <span style={{ fontSize: '0.59rem' }}>הצג כפתור חזרה לתפריט הראשי</span>
+          <span>הצג כפתור חזרה לתפריט הראשי</span>
         </span>
       </div>
     </div>
@@ -110,9 +114,9 @@ interface CustomNodeProps {
 }
 
 interface NodeData {
-  title: string,
-  messageContent: string,
-  onChange: (e: any) => {},
-  nodeId: string,
-  options: string[]
+	title: string,
+	messageContent: string,
+	onRemove: (nodeId: string, portId: string) => void,
+	nodeId: string,
+	options: string[]
 }

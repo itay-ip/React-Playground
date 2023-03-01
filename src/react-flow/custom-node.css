@@ -2,6 +2,8 @@
   width: 327px;
   /* direction: rtl; */
   background-color: #FFFFFF;
+  /* background: rgba(255, 255, 2555, 0.8); */
+  /* opacity: 0.87; */
   direction: rtl;
   /*tokens.$radius-large*/
   border-radius: 16px;
@@ -40,6 +42,7 @@
   margin-block-end: 16px; /*tokens.$spacing-xx-small*/
   margin-inline: 16px;
   width: 90%;
+  height: fit-content;
   border-radius: 8px; /*tokens.$radius-small*/
   background-color: #F2F5F8; /*tokens.$color-whisper*/
   outline: none;

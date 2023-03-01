@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, MiniMap } from 'reactflow';
+import { useEffect, useCallback, useRef, useState } from 'react';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -27,7 +27,8 @@ export const CustomFlow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const edgeUpdateSuccessful = useRef(true);
-  
+  const edgeConnecting = useRef(false);
+
   const onChange = (event: any) => {
     console.log('onChange');
     setNodes((nds) =>
@@ -46,14 +47,13 @@ export const CustomFlow = () => {
   };
 
   useEffect(() => {
-    
-
+    /* onMount - Decide how to read a graph from JSON */
     setNodes([
       { /* Initial root node */
         id: '00000000-0000-0000-0000-00000000abba',
         type: 'customNode',
-        data: { onChange, title: 'כותרת', nodeId: '00000000-0000-0000-0000-00000000abba' },
-        position: { x:0, y: 0 },
+        data: { onRemove: onRemove, onChange, title: 'כותרת', nodeId: '00000000-0000-0000-0000-00000000abba' },
+        position: { x: 650, y: -50 },
         targetPosition: Position.Left,
       }
    ]);
@@ -74,29 +74,76 @@ export const CustomFlow = () => {
           return eds;
         }
         return addEdge({ ...params, style: { stroke: '#9AD4F1' }, type: 'customEdge', markerEnd: edgeMarkerEnd }, eds);
-      })
+      });
     },
     []
   );
 
+  const onConnectEnd = (e: MouseEvent | TouchEvent) => {
+    console.log('onConnectEnd');
+    if (edgeConnecting.current) {
+      edgeConnecting.current = false;
+      setNodes((nds) => nds.map((node) => {
+        return {
+          ...node,
+          style: {backgroundColor: 'transparent'}
+        };
+      }));
+    }
+  }
+
   const onEdgeUpdateStart = useCallback(() => {
     edgeUpdateSuccessful.current = false;
+    console.log('onEdgeUpdateStart');
   }, []);
 
   const onEdgeUpdate = useCallback((oldEdge: Edge<any>, newConnection: any) => {
     edgeUpdateSuccessful.current = true;
+    console.log('onEdgeUpdate');
     setEdges((els) => updateEdge(oldEdge, newConnection, els));
   }, []);
 
   const onEdgeUpdateEnd = useCallback((_: any, edge: { id: string; }) => {
+    console.log('onEdgeUpdateEnd');
 
     if (!edgeUpdateSuccessful.current) {
       setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     }
     
-
     edgeUpdateSuccessful.current = true;
   }, []);
+
+  const onNodeMouseEnter = (evt: any, n: any) => { 
+    if (edgeConnecting.current) {
+      setNodes((nds) => nds.map((node) => {
+        if (node.id === n.id) {
+          return {
+            ...node,
+            style: {backgroundColor: '#51D5A5', padding: '0.05rem', borderRadius: '0.8rem', borderWidth: '20px'}
+          }
+        } else {
+          return {
+            ...node
+          };
+        }
+      }));
+    }
+  }
+
+  const onNodeMouseLeave = (evt: any, n: any) => { 
+    if (edgeConnecting.current) {
+      setNodes((nds) => nds.map((node) => {
+        return {
+          ...node,
+          style: {backgroundColor: 'transparent'}
+        };
+      }));
+    }
+  }
+
+  const onRemove = (nodeId: string, portId: string, index: number) => {
+    setEdges((eds) => eds.filter((e) => !e.id.startsWith('reactflow__edge-' + nodeId + portId) ));
+  }
 
   return (
     <>
@@ -107,7 +154,7 @@ export const CustomFlow = () => {
             id,
             type: 'customNode',
             position: { x: 450, y: -50 },
-            data: { onChange: onChange, title: 'כותרת', nodeId: id },
+            data: { onRemove: onRemove, title: 'כותרת', nodeId: id },
             targetPosition: Position.Right,
         }]);
       }}
@@ -121,7 +168,12 @@ export const CustomFlow = () => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onNodeMouseEnter={onNodeMouseEnter}
+          onNodeMouseLeave={onNodeMouseLeave}
+          // onEdgeClick={(e, n) => { console.log('Edge click'); console.log(e); console.log(n); }}
+          onConnectStart={ (e, n) => { edgeConnecting.current = true; console.log('Connect start'); console.log('From node: ', n); } }
           onConnect={onConnect}
+          onConnectEnd={onConnectEnd}
           onEdgeUpdate={onEdgeUpdate}
           onEdgeUpdateStart={onEdgeUpdateStart}
           onEdgeUpdateEnd={onEdgeUpdateEnd}
@@ -132,6 +184,7 @@ export const CustomFlow = () => {
           defaultViewport={defaultViewport}
           fitView
           attributionPosition="bottom-left"
+          /* --------- */
         >
           <Controls />
           <MiniMap />

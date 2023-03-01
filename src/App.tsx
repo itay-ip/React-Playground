@@ -1,5 +1,4 @@
 import { CustomFlow } from "./react-flow/custom-flow";
-import { Flow } from "./react-flow/flow";
 
 
 function App() {
