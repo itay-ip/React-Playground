@@ -1,0 +1,96 @@
+.node {
+  width: 327px;
+  /* direction: rtl; */
+  background-color: #FFFFFF;
+  direction: rtl;
+  /*tokens.$radius-large*/
+  border-radius: 16px;
+}
+
+.header {
+  color: white;
+  background: #0075DB;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  /*tokens.$radius-large*/
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+  
+  padding-inline: 24px;
+  padding-block: 12px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  /*tokens.$spacing-xx-small*/
+  margin-block-start: 16px;
+  /*tokens.$spacing-unit*/
+  padding-block: 8px;
+}
+
+.messageContent {
+  border: none;
+  margin-block-end: 16px; /*tokens.$spacing-xx-small*/
+  margin-inline: 16px;
+  width: 90%;
+  border-radius: 8px; /*tokens.$radius-small*/
+  background-color: #F2F5F8; /*tokens.$color-whisper*/
+  outline: none;
+  resize: none;
+}
+
+.plusButton {
+  background: linear-gradient(225deg, #282FEF 0.03%, #33B1FF 98.61%);
+  border-radius: 50%;
+  border: 0px;
+  color: white;
+  padding-inline: 14px;
+  font-size: 26px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  padding-inline-start: 16px;/*tokens.$spacing-xx-small*/
+  margin-block-end: 16px;/*tokens.$spacing-xx-small*/
+  width: 100%;
+}
+
+
+.hadshanutInput {
+  border: 1px solid #BCC3CB;/*tokens.$color-palladium*/
+  border-radius: 8px; /*tokens.$radius-medium*/
+  padding-block: 6px;
+  padding-inline: 16px; /*tokens.$spacing-xx-small*/
+  width: 75%;
+}
+
+.dottedLink {
+  content: '';
+  border: 1px dashed #9AD4F1;
+}
+
+.portActive {
+  background: linear-gradient(225deg, #282fef, #33b1ff);
+  border: none;
+  height: 14px;
+  width: 14px;
+  transform: none;
+  top: auto;
+}
+
+.portConnectable {
+  background: white;
+  border: 1px solid #9AD4F1;
+  height: 14px;
+  width: 14px;
+  transform: none;
+  top: auto;
+}

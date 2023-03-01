@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -53,7 +53,7 @@ export const CustomFlow = () => {
         id: '00000000-0000-0000-0000-00000000abba',
         type: 'customNode',
         data: { onChange, title: 'כותרת', nodeId: '00000000-0000-0000-0000-00000000abba' },
-        position: { x: 650, y: -50 },
+        position: { x:0, y: 0 },
         targetPosition: Position.Left,
       }
    ]);
@@ -125,7 +125,7 @@ export const CustomFlow = () => {
           onEdgeUpdate={onEdgeUpdate}
           onEdgeUpdateStart={onEdgeUpdateStart}
           onEdgeUpdateEnd={onEdgeUpdateEnd}
-          style={{ background: '#F2F2F2' }}
+          style={{ background: '#F2F2F2', direction: 'ltr' }}
           nodeTypes={nodeTypes}
           edgeTypes={edgeTypes}
           connectionLineStyle={connectionLineStyle}
@@ -134,6 +134,7 @@ export const CustomFlow = () => {
           attributionPosition="bottom-left"
         >
           <Controls />
+          <MiniMap />
         </ReactFlow>
       </ReactFlowProvider>
     </>
