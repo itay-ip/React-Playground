@@ -1,5 +1,5 @@
 import { memo, useState } from 'react';
-import { Handle, Position, useNodeId } from 'reactflow';
+import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
 import './custom-node.css';
 
 const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
@@ -7,12 +7,12 @@ const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
 	const [message, setNodeMessage] = useState<string>(data.messageContent || '');
 	const nodeId = useNodeId();
-	const [options, setOptions] = useState<string[]>(data.options);
+	const [options, setOptions] = useState<string[]>(data.options || []);
 
   const handleAddOption = () => {
     debugger
-    if (data.options?.length < 9) {
-      setOptions((opts) => {
+    if (options.length < 9) {
+      setOptions((opts) => {      
         data.options = [...opts, ''];
         return data.options;
       });

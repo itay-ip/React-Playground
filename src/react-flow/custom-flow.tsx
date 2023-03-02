@@ -227,7 +227,7 @@ export const CustomFlow = () => {
             type: 'customNode',
             position: { x: 450, y: -50 },
             data: { title: 'כותרת' },
-            targetPosition: Position.Right,
+            targetPosition: Position.Right
         }]);
       }}
       >
