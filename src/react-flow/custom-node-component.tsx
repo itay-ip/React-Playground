@@ -1,17 +1,17 @@
 import { memo, useState } from 'react';
-import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
+import { Handle, Position, useNodeId } from 'reactflow';
 import './custom-node.css';
 
 const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
-	const [message, setNodeMessage] = useState<string>('');
-	const [options, setOptions] = useState<string[]>([]);
+	const [message, setNodeMessage] = useState<string>(data.messageContent || '');
 	const nodeId = useNodeId();
+	const [options, setOptions] = useState<string[]>(data.options);
 
   const handleAddOption = () => {
-
-    if (options.length < 9) {
+    debugger
+    if (data.options?.length < 9) {
       setOptions((opts) => {
         data.options = [...opts, ''];
         return data.options;
@@ -22,10 +22,10 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
   }
 
 	const handleRemoveOption = (index: number) => {
-		data.options = [...options].filter((_, idx) => idx !== index);
-		console.log(data?.onRemove);
-		data?.onRemove(nodeId || '', nodeId + `-${index}`);
-		return setOptions(data.options);
+		// data.options = [...options].filter((_, idx) => idx !== index);
+		// console.log(data?.onRemove);
+		// data?.onRemove(nodeId || '', nodeId + `-${index}`);
+		// return setOptions(data.options);
 	}
 
 	const onMessageChange = (e: any) => {
@@ -36,9 +36,9 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
   return (
     <div className='node'>
 			
-      { !isRoot(data?.nodeId) &&
+      { !isRoot(nodeId!) &&
 				<Handle
-					id={data.nodeId + "-input"}
+					id={nodeId + "-input"}
 					type="target"
 					position={Position.Right}
 					style={{ top: 20, right: -2, zIndex: 1 , background: '#FFF', border: '1px solid black' }}
@@ -54,7 +54,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 
       <div className='body'>
         <textarea
-          placeholder={isRoot(data.nodeId) ? 'הכנס טקסט כאן לדוגמא: שלום! אני הבוט החכם של מחלקת התמיכה. באיזה נושא אתם זקוקים לתמיכה?' : 'הטקסט שלך כאן'}
+          placeholder={isRoot(nodeId!) ? 'הכנס טקסט כאן לדוגמא: שלום! אני הבוט החכם של מחלקת התמיכה. באיזה נושא אתם זקוקים לתמיכה?' : 'הטקסט שלך כאן'}
           onChange={onMessageChange}
           className='messageContent'
           value={data.messageContent}
@@ -74,7 +74,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
                 }} placeholder={'הטקסט שלך כאן'} value={option} />
                 <div className='dottedLink' />
                 <Handle
-                  id={`${data.nodeId}-${index}`}
+                  id={`${nodeId}-${index}`}
                   type="source"
                   position={Position.Left}
                   className={"portConnectable"}
@@ -85,7 +85,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
           })
         }
         {
-          options.length < 9 &&
+          (!data.options || data.options.length < 9) &&
           <button
             onClick={handleAddOption}
             className="plusButton"
@@ -116,7 +116,5 @@ interface CustomNodeProps {
 interface NodeData {
 	title: string,
 	messageContent: string,
-	onRemove: (nodeId: string, portId: string) => void,
-	nodeId: string,
 	options: string[]
 }

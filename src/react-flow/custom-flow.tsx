@@ -18,6 +18,82 @@ const edgeTypes = {
   customEdge: CustomEdge,
 };
 
+const flow = {
+  "nodes": [
+      {
+          "width": 327,
+          "height": 371,
+          "id": "00000000-0000-0000-0000-00000000abba",
+          "type": "customNode",
+          "data": {
+              "title": "כותרת",
+              "options": [
+                  "123",
+                  "34556"
+              ]
+          },
+          "position": {
+              "x": 906,
+              "y": -75
+          },
+          "targetPosition": "left",
+          "selected": false,
+          "positionAbsolute": {
+              "x": 906,
+              "y": -75
+          },
+          "dragging": false,
+          "style": {
+              "backgroundColor": "transparent"
+          }
+      },
+      {
+          "width": 327,
+          "height": 257,
+          "id": "7fad242e-c03f-40f3-b163-dff60131fba9",
+          "type": "customNode",
+          "position": {
+              "x": 450,
+              "y": -50
+          },
+          "data": {
+              "title": "כותרת"
+          },
+          "targetPosition": "right",
+          "style": {
+              "backgroundColor": "transparent"
+          },
+          "positionAbsolute": {
+              "x": 450,
+              "y": -50
+          }
+      }
+  ],
+  "edges": [
+      {
+          "source": "00000000-0000-0000-0000-00000000abba",
+          "sourceHandle": "00000000-0000-0000-0000-00000000abba-0",
+          "target": "7fad242e-c03f-40f3-b163-dff60131fba9",
+          "targetHandle": "7fad242e-c03f-40f3-b163-dff60131fba9-input",
+          "style": {
+              "stroke": "#9AD4F1"
+          },
+          "type": "customEdge",
+          "markerEnd": {
+              "type": "arrow",
+              "strokeWidth": 2,
+              "color": "#9AD4F1"
+          },
+          "id": "reactflow__edge-00000000-0000-0000-0000-00000000abba00000000-0000-0000-0000-00000000abba-0-7fad242e-c03f-40f3-b163-dff60131fba97fad242e-c03f-40f3-b163-dff60131fba9-input"
+      }
+  ],
+  "viewport": {
+      "x": -667,
+      "y": 261,
+      "zoom": 2
+  }
+} as any
+
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 export const CustomFlow = () => {
@@ -29,22 +105,22 @@ export const CustomFlow = () => {
   const edgeUpdateSuccessful = useRef(true);
   const edgeConnecting = useRef(false);
 
-  const onChange = (event: any) => {
-    console.log('onChange');
-    setNodes((nds) =>
-      nds.map((node) => {
-        console.log('Event: ',event.target.value);
+  const onRestore = useCallback(() => {
+    console.log('restore');
+    const restoreFlow = async () => {
 
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            content: event.target.value,
-          },
-        };
-      })
-    );
-  };
+      if (flow) {
+        console.log(flow.nodes);
+
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+        // setViewport({ x, y, zoom });
+      }
+    };
+
+    restoreFlow();
+    console.log('Nodes after restore: ', nodes);
+  }, [setNodes]);
 
   useEffect(() => {
     /* onMount - Decide how to read a graph from JSON */
@@ -52,7 +128,7 @@ export const CustomFlow = () => {
       { /* Initial root node */
         id: '00000000-0000-0000-0000-00000000abba',
         type: 'customNode',
-        data: { onRemove: onRemove, onChange, title: 'כותרת', nodeId: '00000000-0000-0000-0000-00000000abba' },
+        data: { title: 'כותרת' },
         position: { x: 650, y: -50 },
         targetPosition: Position.Left,
       }
@@ -141,10 +217,6 @@ export const CustomFlow = () => {
     }
   }
 
-  const onRemove = (nodeId: string, portId: string, index: number) => {
-    setEdges((eds) => eds.filter((e) => !e.id.startsWith('reactflow__edge-' + nodeId + portId) ));
-  }
-
   return (
     <>
       <button 
@@ -154,7 +226,7 @@ export const CustomFlow = () => {
             id,
             type: 'customNode',
             position: { x: 450, y: -50 },
-            data: { onRemove: onRemove, title: 'כותרת', nodeId: id },
+            data: { title: 'כותרת' },
             targetPosition: Position.Right,
         }]);
       }}
@@ -162,7 +234,7 @@ export const CustomFlow = () => {
         הוספת תיבה חדשה
       </button>
       <ReactFlowProvider>
-      <Mashu />
+        <Mashu />
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -184,11 +256,16 @@ export const CustomFlow = () => {
           defaultViewport={defaultViewport}
           fitView
           attributionPosition="bottom-left"
-          /* --------- */
         >
+          
           <Controls />
           <MiniMap />
         </ReactFlow>
+        <div className="save__controls">
+            {/* <button onClick={onSave}>save</button> */}
+            <button onClick={onRestore}>restore</button>
+            {/* <button onClick={onAdd}>add node</button> */}
+        </div>
       </ReactFlowProvider>
     </>
   );
