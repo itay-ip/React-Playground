@@ -51,6 +51,7 @@
 
 .plusButton {
   background: linear-gradient(225deg, #282FEF 0.03%, #33B1FF 98.61%);
+  cursor: pointer;
   border-radius: 50%;
   border: 0px;
   color: white;
