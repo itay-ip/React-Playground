@@ -24,15 +24,6 @@ export const CustomEdge = ({
 }: any /* Some type problems with these arguments... 
 					Need to find the correct types for them */) => {
 
-	// const [expanded, setExpanded] = useState(false);
-  // const edgeId = useNodeId();
-  // console.log(edgeId);
-  // useEffect(() => {
-  //   if (data?.expanded) {
-  //     setExpanded(data.expanded);
-  //   }
-  // }, [data]);
-
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
