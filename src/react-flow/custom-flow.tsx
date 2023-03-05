@@ -1,12 +1,12 @@
-import { useEffect, useCallback, useRef, useState } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler, MiniMap } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
-
 import { CustomNodeComponent } from './custom-node-component';
 import { CustomEdge } from './custom/custom-edge-component';
 import { Mashu } from './mashu';
 
+import { graph } from '../graph';
 
 const connectionLineStyle = { stroke: '#9AD4F1' };
 const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' };
@@ -17,82 +17,6 @@ const nodeTypes = {
 const edgeTypes = {
   customEdge: CustomEdge,
 };
-
-const flow = {
-  "nodes": [
-      {
-          "width": 327,
-          "height": 371,
-          "id": "00000000-0000-0000-0000-00000000abba",
-          "type": "customNode",
-          "data": {
-              "title": "כותרת",
-              "options": [
-                  "123",
-                  "34556"
-              ]
-          },
-          "position": {
-              "x": 906,
-              "y": -75
-          },
-          "targetPosition": "left",
-          "selected": false,
-          "positionAbsolute": {
-              "x": 906,
-              "y": -75
-          },
-          "dragging": false,
-          "style": {
-              "backgroundColor": "transparent"
-          }
-      },
-      {
-          "width": 327,
-          "height": 257,
-          "id": "7fad242e-c03f-40f3-b163-dff60131fba9",
-          "type": "customNode",
-          "position": {
-              "x": 450,
-              "y": -50
-          },
-          "data": {
-              "title": "כותרת"
-          },
-          "targetPosition": "right",
-          "style": {
-              "backgroundColor": "transparent"
-          },
-          "positionAbsolute": {
-              "x": 450,
-              "y": -50
-          }
-      }
-  ],
-  "edges": [
-      {
-          "source": "00000000-0000-0000-0000-00000000abba",
-          "sourceHandle": "00000000-0000-0000-0000-00000000abba-0",
-          "target": "7fad242e-c03f-40f3-b163-dff60131fba9",
-          "targetHandle": "7fad242e-c03f-40f3-b163-dff60131fba9-input",
-          "style": {
-              "stroke": "#9AD4F1"
-          },
-          "type": "customEdge",
-          "markerEnd": {
-              "type": "arrow",
-              "strokeWidth": 2,
-              "color": "#9AD4F1"
-          },
-          "id": "reactflow__edge-00000000-0000-0000-0000-00000000abba00000000-0000-0000-0000-00000000abba-0-7fad242e-c03f-40f3-b163-dff60131fba97fad242e-c03f-40f3-b163-dff60131fba9-input"
-      }
-  ],
-  "viewport": {
-      "x": -667,
-      "y": 261,
-      "zoom": 2
-  }
-} as any
 
 const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
@@ -108,18 +32,15 @@ export const CustomFlow = () => {
   const onRestore = useCallback(() => {
     console.log('restore');
     const restoreFlow = async () => {
-
-      if (flow) {
-        console.log(flow.nodes);
-
-        setNodes(flow.nodes || []);
-        setEdges(flow.edges || []);
-        // setViewport({ x, y, zoom });
+      const g = JSON.parse(graph);
+      if (graph) {
+        console.log(g.nodes);
+        setNodes(g.nodes || []);
+        setEdges(g.edges || []);
       }
     };
 
     restoreFlow();
-    console.log('Nodes after restore: ', nodes);
   }, [setNodes]);
 
   useEffect(() => {
@@ -149,7 +70,7 @@ export const CustomFlow = () => {
           console.log('Do not connect - loop detected');
           return eds;
         }
-        return addEdge({ ...params, style: { stroke: '#9AD4F1' }, type: 'customEdge', markerEnd: edgeMarkerEnd }, eds);
+        return addEdge({ ...params, id: `${params.sourceHandle}_${params.targetHandle}`, style: { stroke: '#9AD4F1' }, type: 'customEdge', markerEnd: edgeMarkerEnd }, eds);
       });
     },
     []
@@ -217,19 +138,22 @@ export const CustomFlow = () => {
     }
   }
 
+  const handleAddNode = () => {
+    
+    const id = uuidv4();
+    setNodes((nodes) => [...nodes, {
+      id,
+      type: 'customNode',
+      position: { x: 450, y: -50 },
+      data: { title: 'כותרת' },
+      targetPosition: Position.Right
+    }]);
+  }
+
   return (
     <>
       <button 
-        onClick={() => {
-          const id = uuidv4();
-          setNodes((nodes) => [...nodes, {
-            id,
-            type: 'customNode',
-            position: { x: 450, y: -50 },
-            data: { title: 'כותרת' },
-            targetPosition: Position.Right
-        }]);
-      }}
+        onClick={handleAddNode}
       >
         הוספת תיבה חדשה
       </button>
