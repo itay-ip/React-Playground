@@ -35,7 +35,7 @@ export const CustomFlow = () => {
       const g = JSON.parse(graph);
       if (graph) {
         console.log(g.nodes);
-        setNodes(g.nodes || []);
+        setNodes(g.nodes.map((node: any) => { return {...node, data: {...node.data, onRemoveOption: handleRemoveOption} } }) || []);
         setEdges(g.edges || []);
       }
     };
@@ -151,11 +151,7 @@ export const CustomFlow = () => {
   }
 
   const handleRemoveOption = (id: string) => {
-    setEdges(eds => eds.filter(edge => {
-      debugger
-      console.log(edge.id, !edge.id.startsWith(id));
-      return !edge.id.startsWith(id);
-    }));
+    setEdges(eds => eds.filter(edge => !edge.id.startsWith(id) )); 
   }
 
   return (
