@@ -1,50 +1,42 @@
 import { memo, useEffect, useState } from 'react';
-import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
+import { Handle, Position, useNodeId } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
 import './custom-node.css';
 
-const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
-const deepCopyMap = (map: Map<string, string>) => new Map<string, string>(JSON.parse(JSON.stringify(Array.from(map))));
-
+const deepCopyArray = (arr: Option[]): Option[] => JSON.parse(JSON.stringify(arr));
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
 	const nodeId = useNodeId();
-	const [options, setOptions] = useState<Map<string, string>>(new Map<string, string>());
+	const [options, setOptions] = useState<Option[]>([]);
 	const [messageContent, setMessageContent] = useState<string>();
-
-  const opts = Array.from(options, (entry) => {
-    return { portId: entry[0], data: entry[1] }
-  });
 
   useEffect(() => {
     console.log(`props of ${nodeId} were changed`);
     if (data.options) {
-      setOptions(deepCopyMap(data.options));
+      setOptions(deepCopyArray(data.options));
     }
 
   }, [data]);
 
   const handleAddOption = () => {
-    if (options.size >= 9) {
+    if (options.length >= 9) {
       return;
     }
-    const newOptions = deepCopyMap(options);
-    newOptions.set(uuidv4(), '');
-    console.log(newOptions);
+    const newOptions: Option[] = deepCopyArray(options);
+    newOptions.push({ portId: uuidv4(), data: '' });
     setOptions(newOptions);
     data.options = newOptions;
   }
 
 	const handleRemoveOption = (id: string) => {
-		const newOptions = deepCopyMap(options);
-    newOptions.delete(id);
+		const newOptions = deepCopyArray(options).filter((opt) => opt.portId !== id);
     setOptions(newOptions);
     data.options = newOptions;
 	}
 
-  const handleEditOption = (id: string, newText: string) => {
-    const newOptions = deepCopyMap(options);
-    newOptions.set(id, newText);
+  const handleEditOption = (index: number, newText: string) => {
+    const newOptions = deepCopyArray(options);
+    newOptions[index].data = newText;
     setOptions(newOptions);
     data.options = newOptions;
   }
@@ -82,13 +74,13 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
           value={messageContent || ''}
         />
         {
-          opts?.map((option, index) => {
+          options?.map((option, index) => {
             return (
-              <span key={index} className="option">
-                <button onClick={() => handleRemoveOption(option.portId)} className="deleteButton">
+              <span key={option.portId} className="option">
+                <button onClick={() => {handleRemoveOption(option.portId); data.onRemoveOption(option.portId);}} className="deleteButton">
                   X
                 </button>
-                <input className="hadshanutInput" type="text" onChange={(e) => handleEditOption(option.portId, e.target.value)} placeholder={'הטקסט שלך כאן'} value={option.data} />
+                <input className="hadshanutInput" type="text" onChange={(e) => handleEditOption(index, e.target.value)} placeholder={'הטקסט שלך כאן'} value={option.data} />
                 <div className='dottedLink' />
                 <Handle
                   id={`${option.portId}`}
@@ -102,7 +94,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
           })
         }
         {
-          (!opts || opts?.length < 9) &&
+          (!options || options?.length < 9) &&
           <button
             onClick={handleAddOption}
             className="plusButton"
@@ -133,6 +125,12 @@ interface CustomNodeProps {
 interface NodeData {
 	title: string,
 	messageContent: string,
-	options: Map<string, string>,
-  mainMenuCheckbox: boolean
+	options: Option[],
+  mainMenuCheckbox: boolean,
+  onRemoveOption: (id: string) => void
+}
+
+interface Option {
+  portId: string,
+  data: string
 }

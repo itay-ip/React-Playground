@@ -49,7 +49,7 @@ export const CustomFlow = () => {
       { /* Initial root node */
         id: '00000000-0000-0000-0000-00000000abba',
         type: 'customNode',
-        data: { title: 'כותרת' },
+        data: { title: 'כותרת', onRemoveOption: handleRemoveOption },
         position: { x: 650, y: -50 },
         targetPosition: Position.Left,
       }
@@ -145,9 +145,17 @@ export const CustomFlow = () => {
       id,
       type: 'customNode',
       position: { x: 450, y: -50 },
-      data: { title: 'כותרת' },
+      data: { title: 'כותרת', onRemoveOption: handleRemoveOption },
       targetPosition: Position.Right
     }]);
+  }
+
+  const handleRemoveOption = (id: string) => {
+    setEdges(eds => eds.filter(edge => {
+      debugger
+      console.log(edge.id, !edge.id.startsWith(id));
+      return !edge.id.startsWith(id);
+    }));
   }
 
   return (
