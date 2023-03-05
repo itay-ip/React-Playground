@@ -154,6 +154,34 @@ export const CustomFlow = () => {
     setEdges(eds => eds.filter(edge => !edge.id.startsWith(id) )); 
   }
 
+  const onEdgeMouseEnter = (event: React.MouseEvent, edge: Edge) => { 
+    setEdges((eds) => eds.map(e => {
+    if (edge.id === e.id) {
+      return {
+        ...edge,
+        style: { stroke: '#282FEF' },
+        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#282FEF' },
+        data: { expanded: true }
+      }
+    }
+    return e;
+  }));
+ }
+
+ const onEdgeMouseLeave = (event: React.MouseEvent, edge: Edge) => { 
+    setEdges((eds) => eds.map(e => {
+    if (edge.id === e.id) {
+      return {
+        ...edge,
+        style: { stroke: '#9AD4F1' },
+        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' },
+        data: { expanded: false }
+      }
+    }
+    return e
+  }));
+ }
+
   return (
     <>
       <button 
@@ -171,6 +199,8 @@ export const CustomFlow = () => {
           onNodeMouseEnter={onNodeMouseEnter}
           onNodeMouseLeave={onNodeMouseLeave}
           // onEdgeClick={(e, n) => { console.log('Edge click'); console.log(e); console.log(n); }}
+          onEdgeMouseEnter={onEdgeMouseEnter}
+          onEdgeMouseLeave={onEdgeMouseLeave}
           onConnectStart={ (e, n) => { edgeConnecting.current = true; console.log('Connect start'); console.log('From node: ', n); } }
           onConnect={onConnect}
           onConnectEnd={onConnectEnd}
