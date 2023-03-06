@@ -5,14 +5,14 @@ export const Mashu = () => {
 	return (
     <button onClick={
 			() => {
-				const obj = reactFlow.toObject();
-				console.log(obj);
+				const graph = reactFlow.toObject();
+				console.log(graph);
 			}}>
 			שמור
 		</button>
   );
 }
 
-const graphToJson = (nodes: any, edges: any) => {
+const graphToJson = (graph: any) => {
 	
 }

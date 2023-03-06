@@ -1,48 +1,66 @@
-import { memo, useState } from 'react';
-import { Handle, NodeProps, Position, useNodeId } from 'reactflow';
+import { memo, useEffect, useState } from 'react';
+import { Handle, Position, useNodeId, useStore } from 'reactflow';
+import { v4 as uuidv4 } from 'uuid';
 import './custom-node.css';
 
-const COLOR = 'linear-gradient(225deg, #282fef, #33b1ff)';
+const deepCopyArray = (arr: Option[]): Option[] => JSON.parse(JSON.stringify(arr));
+const connectionNodeIdSelector = (state: any) => state.connectionNodeId;
+
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
-	const [message, setNodeMessage] = useState<string>('');
-	const [options, setOptions] = useState<string[]>([]);
 	const nodeId = useNodeId();
+	const [options, setOptions] = useState<Option[]>([]);
+	const [messageContent, setMessageContent] = useState<string>();
+  const connectionNodeId = useStore(connectionNodeIdSelector);
+  const isTarget = connectionNodeId && connectionNodeId !== nodeId;
+  
+  useEffect(() => {
+    console.log(`props of ${nodeId} were changed`);
+    if (data.options) {
+      setOptions(deepCopyArray(data.options));
+    }
+
+  }, [data]);
 
   const handleAddOption = () => {
-
-    if (options.length < 9) {
-      setOptions((opts) => {
-        data.options = [...opts, ''];
-        return data.options;
-      });
-    } else {
-      alert('ניתן להגדיר עד 9 אפשרויות');
+    if (options.length >= 9) {
+      return;
     }
+    const newOptions: Option[] = deepCopyArray(options);
+    newOptions.push({ portId: uuidv4(), data: '' });
+    setOptions(newOptions);
+    data.options = newOptions;
   }
 
-	const handleRemoveOption = (index: number) => {
-		data.options = [...options].filter((_, idx) => idx !== index);
-		console.log(data?.onRemove);
-		data?.onRemove(nodeId || '', nodeId + `-${index}`);
-		return setOptions(data.options);
+	const handleRemoveOption = (id: string) => {
+		const newOptions = deepCopyArray(options).filter((opt) => opt.portId !== id);
+    setOptions(newOptions);
+    data.options = newOptions;
 	}
 
-	const onMessageChange = (e: any) => {
-		data.messageContent = e.target.value;
-		setNodeMessage(data.messageContent);
-	}
-	
+  const handleEditOption = (index: number, newText: string) => {
+    const newOptions = deepCopyArray(options);
+    newOptions[index].data = newText;
+    setOptions(newOptions);
+    data.options = newOptions;
+  }
+
+  const handleEditMessageContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setMessageContent(newText);
+    data.messageContent = newText;
+  }
+
   return (
     <div className='node'>
 			
-      { !isRoot(data?.nodeId) &&
+      { !isRoot(nodeId!) &&
 				<Handle
-					id={data.nodeId + "-input"}
+					id={nodeId + "-input"}
 					type="target"
 					position={Position.Right}
-					style={{ top: 20, right: -2, zIndex: 1 , background: '#FFF', border: '1px solid black' }}
-					// className='targetHandle'
+					style={{ top: 20, right: -2, zIndex: 1, backgroundColor: isTarget ? '#51D5A5' : 'white', transition: isTarget ? 'background-color 0.8s' : 'none' }}
+					className='portConnectable'
 					isConnectable={isConnectable}
 				/>
 			}
@@ -54,27 +72,22 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 
       <div className='body'>
         <textarea
-          placeholder={isRoot(data.nodeId) ? 'הכנס טקסט כאן לדוגמא: שלום! אני הבוט החכם של מחלקת התמיכה. באיזה נושא אתם זקוקים לתמיכה?' : 'הטקסט שלך כאן'}
-          onChange={onMessageChange}
+          placeholder={isRoot(nodeId!) ? 'הכנס טקסט כאן לדוגמא: שלום! אני הבוט החכם של מחלקת התמיכה. באיזה נושא אתם זקוקים לתמיכה?' : 'הטקסט שלך כאן'}
+          onChange={handleEditMessageContent}
           className='messageContent'
-          value={data.messageContent}
+          value={messageContent || ''}
         />
         {
-          data.options?.map((option, index) => {
+          options?.map((option, index) => {
             return (
-              <span key={index} className="option">
-                <button onClick={() => handleRemoveOption(index)} className="deleteButton">
+              <span key={option.portId} className="option">
+                <button onClick={() => {data.onRemoveOption(option.portId); handleRemoveOption(option.portId);}} className="deleteButton">
                   X
                 </button>
-                <input className="hadshanutInput" type="text" onChange={(e) => {
-                  const newOpts = [...options];
-                  newOpts[index] = e.target.value;
-                  data.options = newOpts;
-                  return setOptions(newOpts);
-                }} placeholder={'הטקסט שלך כאן'} value={option} />
+                <input className="hadshanutInput" type="text" onChange={(e) => handleEditOption(index, e.target.value)} placeholder={'הטקסט שלך כאן'} value={option.data} />
                 <div className='dottedLink' />
                 <Handle
-                  id={`${data.nodeId}-${index}`}
+                  id={`${option.portId}`}
                   type="source"
                   position={Position.Left}
                   className={"portConnectable"}
@@ -85,7 +98,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
           })
         }
         {
-          options.length < 9 &&
+          (!options || options?.length < 9) &&
           <button
             onClick={handleAddOption}
             className="plusButton"
@@ -116,7 +129,13 @@ interface CustomNodeProps {
 interface NodeData {
 	title: string,
 	messageContent: string,
-	onRemove: (nodeId: string, portId: string) => void,
-	nodeId: string,
-	options: string[]
+	options: Option[],
+  mainMenuCheckbox: boolean,
+  onRemoveOption: (id: string) => void,
+  isPortConnected: (id: string) => boolean
+}
+
+interface Option {
+  portId: string,
+  data: string
 }

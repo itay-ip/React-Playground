@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { getBezierPath } from 'reactflow';
+import React, { useEffect, useState } from 'react';
+import { getBezierPath, useNodeId } from 'reactflow';
 
 import './index.css';
 
@@ -20,6 +20,7 @@ export const CustomEdge = ({
   targetPosition,
   style = {},
   markerEnd,
+  data
 }: any /* Some type problems with these arguments... 
 					Need to find the correct types for them */) => {
 
@@ -32,7 +33,6 @@ export const CustomEdge = ({
     targetPosition,
   });
 
-	const [expanded, setExpanded] = useState(true);
 	
   return (
 		<>
@@ -51,7 +51,7 @@ export const CustomEdge = ({
 					className="edgebutton-foreignobject"
 					requiredExtensions="http://www.w3.org/1999/xhtml"
 			>
-				{ expanded &&
+				{ data?.expanded &&
 					<div>
 						<button className="edgebutton" onClick={(event) => onEdgeClick(event, id)}>
 							×
