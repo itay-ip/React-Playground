@@ -35,8 +35,8 @@ export const CustomFlow = () => {
       const g = JSON.parse(graph);
       if (graph) {
         console.log(g.nodes);
-        setNodes(g.nodes.map((node: any) => ({...node, data: {...node.data, onRemoveOption: handleRemoveOption} })) || []);
-        setEdges(g.edges || []);
+        setNodes(g.nodes.map((node: any) => ({...node, data: {...node.data, onRemoveOption: handleRemoveOption} })));
+        setEdges(g.edges.map((edge: any) => ({ ...edge, data: { ...edge.data, onRemoveOption: handleRemoveOption } })));
       }
     };
 
@@ -70,7 +70,17 @@ export const CustomFlow = () => {
           console.log('Do not connect - loop detected');
           return eds;
         }
-        return addEdge({ ...params, id: `${params.sourceHandle}_${params.targetHandle}`, style: { stroke: '#9AD4F1' }, type: 'customEdge', markerEnd: edgeMarkerEnd }, eds);
+        return addEdge(
+          {
+          ...params,
+          id: `${params.sourceHandle}_${params.targetHandle}`,
+          style: { stroke: '#9AD4F1' },
+          type: 'customEdge',
+          markerEnd: edgeMarkerEnd,
+          data: { onRemoveOption: handleRemoveOption }
+          },
+          eds
+        );
       });
     },
     []
@@ -104,9 +114,18 @@ export const CustomFlow = () => {
     console.log('onEdgeUpdateEnd');
 
     if (!edgeUpdateSuccessful.current) {
+      // Remove edge
       setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     }
     
+    setEdges((eds) => eds.map(edge => (
+      {
+        ...edge,
+        style: { stroke: '#9AD4F1' },
+        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' },
+        data: { ...edge.data, onRemoveOption: handleRemoveOption }
+      }))
+    );
     edgeUpdateSuccessful.current = true;
   }, []);
 
@@ -123,21 +142,23 @@ export const CustomFlow = () => {
   }
 
   const handleRemoveOption = (id: string) => {
-    setEdges(eds => eds.filter(edge => !edge.id.startsWith(id) )); 
+    setEdges(eds => eds.filter(edge => !edge.id.startsWith(id) ));
   }
 
   const onEdgeMouseEnter = (event: React.MouseEvent, edge: Edge) => { 
     setEdges((eds) => eds.map(e => {
-    if (edge.id === e.id) {
-      return {
-        ...edge,
-        style: { stroke: '#282FEF' },
-        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#282FEF' },
-        data: { expanded: true }
+      if (edge.id === e.id) {
+        return {
+          ...edge,
+          style: { stroke: '#282FEF' },
+          markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#282FEF' },
+          data: { ...edge.data, expanded: true },
+          
+        }
       }
-    }
-    return e;
-  }));
+        return e;
+      }
+    ));
   }
 
   const onEdgeMouseLeave = (event: React.MouseEvent, edge: Edge) => { 
@@ -147,7 +168,7 @@ export const CustomFlow = () => {
         ...edge,
         style: { stroke: '#9AD4F1' },
         markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' },
-        data: { expanded: false }
+        data: { ...edge.data, expanded: false }
       }
     }
       return e

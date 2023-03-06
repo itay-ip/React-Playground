@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { getBezierPath, useNodeId } from 'reactflow';
+import React from 'react';
+import { getBezierPath } from 'reactflow';
 
 import './index.css';
 
@@ -53,7 +53,7 @@ export const CustomEdge = ({
 			>
 				{ data?.expanded &&
 					<div>
-						<button className="edgebutton" onClick={(event) => onEdgeClick(event, id)}>
+						<button className="edgebutton" onClick={(event) => { onEdgeClick(event, id); data.onRemoveOption(id) }}>
 							×
 						</button>
 					</div>
