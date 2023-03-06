@@ -9,7 +9,7 @@ import { Mashu } from './mashu';
 import { graph } from '../graph';
 
 const connectionLineStyle = { stroke: '#9AD4F1' };
-const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' };
+const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 3, color: '#9AD4F1' };
 
 const nodeTypes = {
   customNode: CustomNodeComponent,
@@ -35,7 +35,7 @@ export const CustomFlow = () => {
       const g = JSON.parse(graph);
       if (graph) {
         console.log(g.nodes);
-        setNodes(g.nodes.map((node: any) => { return {...node, data: {...node.data, onRemoveOption: handleRemoveOption} } }) || []);
+        setNodes(g.nodes.map((node: any) => ({...node, data: {...node.data, onRemoveOption: handleRemoveOption} })) || []);
         setEdges(g.edges || []);
       }
     };
@@ -110,34 +110,6 @@ export const CustomFlow = () => {
     edgeUpdateSuccessful.current = true;
   }, []);
 
-  const onNodeMouseEnter = (evt: any, n: any) => { 
-    if (edgeConnecting.current) {
-      setNodes((nds) => nds.map((node) => {
-        if (node.id === n.id) {
-          return {
-            ...node,
-            style: {backgroundColor: '#51D5A5', padding: '0.05rem', borderRadius: '0.8rem', borderWidth: '20px'}
-          }
-        } else {
-          return {
-            ...node
-          };
-        }
-      }));
-    }
-  }
-
-  const onNodeMouseLeave = (evt: any, n: any) => { 
-    if (edgeConnecting.current) {
-      setNodes((nds) => nds.map((node) => {
-        return {
-          ...node,
-          style: {backgroundColor: 'transparent'}
-        };
-      }));
-    }
-  }
-
   const handleAddNode = () => {
     
     const id = uuidv4();
@@ -166,9 +138,9 @@ export const CustomFlow = () => {
     }
     return e;
   }));
- }
+  }
 
- const onEdgeMouseLeave = (event: React.MouseEvent, edge: Edge) => { 
+  const onEdgeMouseLeave = (event: React.MouseEvent, edge: Edge) => { 
     setEdges((eds) => eds.map(e => {
     if (edge.id === e.id) {
       return {
@@ -178,9 +150,9 @@ export const CustomFlow = () => {
         data: { expanded: false }
       }
     }
-    return e
-  }));
- }
+      return e
+    }));
+  }
 
   return (
     <>
@@ -196,8 +168,8 @@ export const CustomFlow = () => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          onNodeMouseEnter={onNodeMouseEnter}
-          onNodeMouseLeave={onNodeMouseLeave}
+          // onNodeMouseEnter={onNodeMouseEnter}
+          // onNodeMouseLeave={onNodeMouseLeave}
           // onEdgeClick={(e, n) => { console.log('Edge click'); console.log(e); console.log(n); }}
           onEdgeMouseEnter={onEdgeMouseEnter}
           onEdgeMouseLeave={onEdgeMouseLeave}
@@ -228,3 +200,33 @@ export const CustomFlow = () => {
     </>
   );
 };
+
+
+
+// const onNodeMouseEnter = (evt: any, n: any) => { 
+  //   if (edgeConnecting.current) {
+  //     setNodes((nds) => nds.map((node) => {
+  //       if (node.id === n.id) {
+  //         return {
+  //           ...node,
+  //           style: {backgroundColor: '#51D5A5', padding: '0.04rem', borderRadius: '0.8rem', borderWidth: '20px'}
+  //         }
+  //       } else {
+  //         return {
+  //           ...node
+  //         };
+  //       }
+  //     }));
+  //   }
+  // }
+
+  // const onNodeMouseLeave = (evt: any, n: any) => { 
+  //   if (edgeConnecting.current) {
+  //     setNodes((nds) => nds.map((node) => {
+  //       return {
+  //         ...node,
+  //         style: {backgroundColor: 'transparent'}
+  //       };
+  //     }));
+  //   }
+  // }

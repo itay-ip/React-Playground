@@ -1,15 +1,19 @@
 import { memo, useEffect, useState } from 'react';
-import { Handle, Position, useNodeId } from 'reactflow';
+import { Handle, Position, useNodeId, useStore } from 'reactflow';
 import { v4 as uuidv4 } from 'uuid';
 import './custom-node.css';
 
 const deepCopyArray = (arr: Option[]): Option[] => JSON.parse(JSON.stringify(arr));
+const connectionNodeIdSelector = (state: any) => state.connectionNodeId;
+
 
 export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
 	const nodeId = useNodeId();
 	const [options, setOptions] = useState<Option[]>([]);
 	const [messageContent, setMessageContent] = useState<string>();
-
+  const connectionNodeId = useStore(connectionNodeIdSelector);
+  const isTarget = connectionNodeId && connectionNodeId !== nodeId;
+  
   useEffect(() => {
     console.log(`props of ${nodeId} were changed`);
     if (data.options) {
@@ -55,7 +59,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 					id={nodeId + "-input"}
 					type="target"
 					position={Position.Right}
-					style={{ top: 20, right: -2, zIndex: 1 }}
+					style={{ top: 20, right: -2, zIndex: 1, backgroundColor: isTarget ? '#51D5A5' : 'white', transition: isTarget ? 'background-color 0.8s' : 'none' }}
 					className='portConnectable'
 					isConnectable={isConnectable}
 				/>
@@ -77,7 +81,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
           options?.map((option, index) => {
             return (
               <span key={option.portId} className="option">
-                <button onClick={() => {handleRemoveOption(option.portId); data.onRemoveOption(option.portId);}} className="deleteButton">
+                <button onClick={() => {data.onRemoveOption(option.portId); handleRemoveOption(option.portId);}} className="deleteButton">
                   X
                 </button>
                 <input className="hadshanutInput" type="text" onChange={(e) => handleEditOption(index, e.target.value)} placeholder={'הטקסט שלך כאן'} value={option.data} />
@@ -127,7 +131,8 @@ interface NodeData {
 	messageContent: string,
 	options: Option[],
   mainMenuCheckbox: boolean,
-  onRemoveOption: (id: string) => void
+  onRemoveOption: (id: string) => void,
+  isPortConnected: (id: string) => boolean
 }
 
 interface Option {
