@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler, MiniMap } from 'reactflow';
+import ReactFlow, { useNodesState, useEdgesState, addEdge, Controls, Position, Connection, Edge, MarkerType, updateEdge, useReactFlow, ReactFlowProvider, NodeMouseHandler, MiniMap, getConnectedEdges, useStore } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { v4 as uuidv4 } from 'uuid';
 import { CustomNodeComponent } from './custom-node-component';
@@ -8,8 +8,8 @@ import { Mashu } from './mashu';
 
 import { graph } from '../graph';
 
-const connectionLineStyle = { stroke: '#9AD4F1' };
-const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 3, color: '#9AD4F1' };
+const connectionLineStyle = { stroke: '#9AD4F1', strokeWidth: 4 };
+const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 1.5, color: '#9AD4F1' };
 
 const nodeTypes = {
   customNode: CustomNodeComponent,
@@ -22,8 +22,6 @@ const defaultViewport = { x: 0, y: 0, zoom: 1.5 };
 
 export const CustomFlow = () => {
 
-  // const reactFlowInstance = useReactFlow();
-
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const edgeUpdateSuccessful = useRef(true);
@@ -35,8 +33,8 @@ export const CustomFlow = () => {
       const g = JSON.parse(graph);
       if (graph) {
         console.log(g.nodes);
-        setNodes(g.nodes.map((node: any) => ({...node, data: {...node.data, onRemoveOption: handleRemoveOption} })));
-        setEdges(g.edges.map((edge: any) => ({ ...edge, data: { ...edge.data, onRemoveOption: handleRemoveOption } })));
+        setNodes(g.nodes.map((node: any) => ({...node, data: {...node.data, onRemoveOption: handleRemoveOption } })));
+        setEdges(g.edges.map((edge: any) => ({ ...edge, style: connectionLineStyle, markerEnd: edgeMarkerEnd, data: { ...edge.data, onRemoveOption: handleRemoveOption } })));
       }
     };
 
@@ -74,7 +72,7 @@ export const CustomFlow = () => {
           {
           ...params,
           id: `${params.sourceHandle}_${params.targetHandle}`,
-          style: { stroke: '#9AD4F1' },
+          style: connectionLineStyle,
           type: 'customEdge',
           markerEnd: edgeMarkerEnd,
           data: { onRemoveOption: handleRemoveOption }
@@ -121,9 +119,9 @@ export const CustomFlow = () => {
     setEdges((eds) => eds.map(edge => (
       {
         ...edge,
-        style: { stroke: '#9AD4F1' },
-        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' },
-        data: { ...edge.data, onRemoveOption: handleRemoveOption }
+        style: connectionLineStyle,
+        markerEnd: edgeMarkerEnd,
+        data: { ...edge.data, expanded: false,  onRemoveOption: handleRemoveOption }
       }))
     );
     edgeUpdateSuccessful.current = true;
@@ -150,10 +148,9 @@ export const CustomFlow = () => {
       if (edge.id === e.id) {
         return {
           ...edge,
-          style: { stroke: '#282FEF' },
-          markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#282FEF' },
+          style: { ...connectionLineStyle, stroke: '#0075DB' },
+          markerEnd: { ...edgeMarkerEnd, color: '#0075DB' },
           data: { ...edge.data, expanded: true },
-          
         }
       }
         return e;
@@ -166,8 +163,8 @@ export const CustomFlow = () => {
     if (edge.id === e.id) {
       return {
         ...edge,
-        style: { stroke: '#9AD4F1' },
-        markerEnd: { type: MarkerType.Arrow, strokeWidth: 2, color: '#9AD4F1' },
+        style: connectionLineStyle,
+        markerEnd: edgeMarkerEnd,
         data: { ...edge.data, expanded: false }
       }
     }
@@ -191,7 +188,6 @@ export const CustomFlow = () => {
           onEdgesChange={onEdgesChange}
           // onNodeMouseEnter={onNodeMouseEnter}
           // onNodeMouseLeave={onNodeMouseLeave}
-          // onEdgeClick={(e, n) => { console.log('Edge click'); console.log(e); console.log(n); }}
           onEdgeMouseEnter={onEdgeMouseEnter}
           onEdgeMouseLeave={onEdgeMouseLeave}
           onConnectStart={ (e, n) => { edgeConnecting.current = true; console.log('Connect start'); console.log('From node: ', n); } }

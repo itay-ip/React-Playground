@@ -1,5 +1,5 @@
 .node {
-  width: 327px;
+  width: 300px;
   /* direction: rtl; */
   background-color: #FFFFFF;
   /* background: rgba(255, 255, 2555, 0.8); */
@@ -12,7 +12,7 @@
 .header {
   color: white;
   background: #0075DB;
-
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -21,8 +21,8 @@
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
   
-  padding-inline: 24px;
-  padding-block: 12px;
+  padding-inline: 20px;
+  padding-block: 4px;
 }
 
 .body {
@@ -74,6 +74,7 @@
   padding-block: 6px;
   padding-inline: 16px; /*tokens.$spacing-xx-small*/
   width: 75%;
+  height: 1.1rem;
 }
 
 .dottedLink {

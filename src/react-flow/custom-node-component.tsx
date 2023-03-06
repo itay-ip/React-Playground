@@ -6,14 +6,18 @@ import './custom-node.css';
 const deepCopyArray = (arr: Option[]): Option[] => JSON.parse(JSON.stringify(arr));
 const connectionNodeIdSelector = (state: any) => state.connectionNodeId;
 
-
-export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProps) => {
+export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
 	const nodeId = useNodeId();
 	const [options, setOptions] = useState<Option[]>([]);
 	const [messageContent, setMessageContent] = useState<string>();
   const connectionNodeId = useStore(connectionNodeIdSelector);
+  const edges = useStore(store => store.edges);
+  const isPortConnected = (portId: string) => {
+    return edges.some(e => e.sourceHandle === portId);
+  }
   const isTarget = connectionNodeId && connectionNodeId !== nodeId;
-  
+  // const updateNodeInternals = useUpdateNodeInternals();
+
   useEffect(() => {
     console.log(`props of ${nodeId} were changed`);
     if (data.options) {
@@ -30,6 +34,7 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
     newOptions.push({ portId: uuidv4(), data: '' });
     setOptions(newOptions);
     data.options = newOptions;
+    // updateNodeInternals(nodeId!);
   }
 
 	const handleRemoveOption = (id: string) => {
@@ -37,6 +42,11 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
     setOptions(newOptions);
     data.options = newOptions;
 	}
+
+  const onRemove = (portId: string) => {
+    data.onRemoveOption(portId);
+    handleRemoveOption(portId);
+  }
 
   const handleEditOption = (index: number, newText: string) => {
     const newOptions = deepCopyArray(options);
@@ -61,13 +71,12 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
 					position={Position.Right}
 					style={{ top: 20, right: -2, zIndex: 1, backgroundColor: isTarget ? '#51D5A5' : 'white', transition: isTarget ? 'background-color 0.8s' : 'none' }}
 					className='portConnectable'
-					isConnectable={isConnectable}
 				/>
 			}
 			
 			<div /* Header */ className='header'>
-				<span style={{marginInlineStart: '4px'}}>{data.title}</span>
-				<div style={{transform: 'rotate(90deg)', marginInlineEnd: '12px'}}>...</div>
+				<span style={{marginInlineStart: '4px', fontSize: 22}}>{data.title}</span>
+				<div style={{transform: 'rotate(90deg)', fontSize: 30, cursor: 'pointer'}}>...</div>
 			</div>
 
       <div className='body'>
@@ -79,19 +88,26 @@ export const CustomNodeComponent = memo(({ data, isConnectable }: CustomNodeProp
         />
         {
           options?.map((option, index) => {
+            const isConnected = isPortConnected(option.portId);
             return (
               <span key={option.portId} className="option">
-                <button onClick={() => {data.onRemoveOption(option.portId); handleRemoveOption(option.portId);}} className="deleteButton">
+                <button onClick={() => onRemove(option.portId)} className="deleteButton">
                   X
                 </button>
-                <input className="hadshanutInput" type="text" onChange={(e) => handleEditOption(index, e.target.value)} placeholder={'הטקסט שלך כאן'} value={option.data} />
+                <input
+                  className="hadshanutInput"
+                  type="text"
+                  onChange={(e) => handleEditOption(index, e.target.value)}
+                  placeholder={'הטקסט שלך כאן'}
+                  value={option.data}
+                />
                 <div className='dottedLink' />
                 <Handle
                   id={`${option.portId}`}
                   type="source"
                   position={Position.Left}
-                  className={"portConnectable"}
-                  isConnectable={isConnectable}
+                  style={{left: -8}}
+                  className={isConnected ? "portActive" : "portConnectable"}
                 />
               </span>
             )
@@ -123,7 +139,6 @@ const isRoot = (uuid: string) => {
 
 interface CustomNodeProps {
   data: NodeData,
-  isConnectable: boolean,
 }
 
 interface NodeData {
@@ -132,7 +147,7 @@ interface NodeData {
 	options: Option[],
   mainMenuCheckbox: boolean,
   onRemoveOption: (id: string) => void,
-  isPortConnected: (id: string) => boolean
+  isPortConnected: (portId: string) => boolean
 }
 
 interface Option {
