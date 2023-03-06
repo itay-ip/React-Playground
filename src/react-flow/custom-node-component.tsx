@@ -23,6 +23,9 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
     if (data.options) {
       setOptions(deepCopyArray(data.options));
     }
+    if (data.messageContent) {
+      setMessageContent(data.messageContent);
+    }
 
   }, [data]);
 
