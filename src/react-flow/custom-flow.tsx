@@ -70,12 +70,12 @@ export const CustomFlow = () => {
         }
         return addEdge(
           {
-          ...params,
-          id: `${params.sourceHandle}_${params.targetHandle}`,
-          style: connectionLineStyle,
-          type: 'customEdge',
-          markerEnd: edgeMarkerEnd,
-          data: { onRemoveOption: handleRemoveOption }
+            ...params,
+            id: `${params.sourceHandle}_${params.targetHandle}`,
+            style: connectionLineStyle,
+            type: 'customEdge',
+            markerEnd: edgeMarkerEnd,
+            data: { onRemoveOption: handleRemoveOption }
           },
           eds
         );
@@ -186,8 +186,6 @@ export const CustomFlow = () => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          // onNodeMouseEnter={onNodeMouseEnter}
-          // onNodeMouseLeave={onNodeMouseLeave}
           onEdgeMouseEnter={onEdgeMouseEnter}
           onEdgeMouseLeave={onEdgeMouseLeave}
           onConnectStart={ (e, n) => { edgeConnecting.current = true; console.log('Connect start'); console.log('From node: ', n); } }
@@ -209,9 +207,7 @@ export const CustomFlow = () => {
           <MiniMap />
         </ReactFlow>
         <div className="save__controls">
-            {/* <button onClick={onSave}>save</button> */}
-            <button onClick={onRestore}>restore</button>
-            {/* <button onClick={onAdd}>add node</button> */}
+          <button onClick={onRestore}>restore</button>
         </div>
       </ReactFlowProvider>
     </>
