@@ -13,10 +13,11 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
   const [title, setTitle] = useState<string>();
   const connectionNodeId = useStore(connectionNodeIdSelector);
   const edges = useStore(store => store.edges);
+  const isTarget = connectionNodeId && connectionNodeId !== nodeId;
+
   const isPortConnected = (portId: string) => {
     return edges.some(e => e.sourceHandle === portId);
   }
-  const isTarget = connectionNodeId && connectionNodeId !== nodeId;
 
   useEffect(() => {
     console.log(`props of ${nodeId} were changed`);
@@ -43,15 +44,11 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
     // updateNodeInternals(nodeId!);
   }
 
-	const handleRemoveOption = (id: string) => {
-		const newOptions = deepCopyArray(options).filter((opt) => opt.portId !== id);
+  const handleRemove = (portId: string) => {
+    const newOptions = deepCopyArray(options).filter((opt) => opt.portId !== portId);
     setOptions(newOptions);
     data.options = newOptions;
-	}
-
-  const onRemove = (portId: string) => {
     data.onRemoveOption(portId);
-    handleRemoveOption(portId);
   }
 
   const handleEditOption = (index: number, newText: string) => {
@@ -97,7 +94,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
             const isConnected = isPortConnected(option.portId);
             return (
               <span key={option.portId} className="option">
-                <button onClick={() => onRemove(option.portId)} className="deleteButton">
+                <button onClick={() => handleRemove(option.portId)} className="deleteButton">
                   X
                 </button>
                 <span>{index + 1}.</span>

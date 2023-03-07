@@ -1,14 +1,8 @@
-import React from 'react';
 import { getBezierPath } from 'reactflow';
 
 import './index.css';
 
 const foreignObjectSize = 40;
-
-const onEdgeClick = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: any) => {
-	evt.stopPropagation();
-	alert(`remove ${id}`);
-};
 
 export const CustomEdge = ({
   id,
@@ -53,7 +47,7 @@ export const CustomEdge = ({
 			>
 				{ data?.expanded &&
 					<div>
-						<button className="edgebutton" onClick={(event) => { onEdgeClick(event, id); data.onRemoveOption(id) }}>
+						<button className="edgebutton" onClick={(event) => data.onRemoveOption(id)}>
 							×
 						</button>
 					</div>

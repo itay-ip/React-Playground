@@ -9,7 +9,7 @@ import { Mashu } from './mashu';
 import { graph } from '../graph';
 
 const connectionLineStyle = { stroke: '#9AD4F1', strokeWidth: 4 };
-const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 1.5, color: '#9AD4F1' };
+const edgeMarkerEnd = { type: MarkerType.Arrow, strokeWidth: 1.2, color: '#9AD4F1' };
 
 const nodeTypes = {
   customNode: CustomNodeComponent,
