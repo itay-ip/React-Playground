@@ -10,13 +10,13 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
 	const nodeId = useNodeId();
 	const [options, setOptions] = useState<Option[]>([]);
 	const [messageContent, setMessageContent] = useState<string>();
+  const [title, setTitle] = useState<string>();
   const connectionNodeId = useStore(connectionNodeIdSelector);
   const edges = useStore(store => store.edges);
   const isPortConnected = (portId: string) => {
     return edges.some(e => e.sourceHandle === portId);
   }
   const isTarget = connectionNodeId && connectionNodeId !== nodeId;
-  // const updateNodeInternals = useUpdateNodeInternals();
 
   useEffect(() => {
     console.log(`props of ${nodeId} were changed`);
@@ -25,6 +25,9 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
     }
     if (data.messageContent) {
       setMessageContent(data.messageContent);
+    }
+    if (data.title) {
+      setTitle(data.title);
     }
 
   }, [data]);
@@ -78,7 +81,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
 			}
 			
 			<div /* Header */ className='header'>
-				<span style={{marginInlineStart: '4px', fontSize: 22}}>{data.title}</span>
+				<span style={{marginInlineStart: '4px', fontSize: 22}}>{title}</span>
 				<div style={{transform: 'rotate(90deg)', fontSize: 30, cursor: 'pointer'}}>...</div>
 			</div>
 
