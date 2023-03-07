@@ -6,7 +6,7 @@ export const graph = JSON.stringify({
             "id": "00000000-0000-0000-0000-00000000abba",
             "type": "customNode",
             "data": {
-                "title": "כותרת",
+                "title": "הודעת כניסה בוט שירות לקוחות",
                 "messageContent": "שלום! אני הבוט החכם של מחלקת התמיכה. באיזה נושא אתם זקוקים לתמיכה?",
                 "options": [
                     {

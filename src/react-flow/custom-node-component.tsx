@@ -82,7 +82,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
 			
 			<div /* Header */ className='header'>
 				<span style={{marginInlineStart: '4px', fontSize: 22}}>{title}</span>
-				<div style={{transform: 'rotate(90deg)', fontSize: 30, cursor: 'pointer'}}>...</div>
+				<span style={{transform: 'rotate(90deg)', fontSize: 30, cursor: 'pointer'}}>...</span>
 			</div>
 
       <div className='body'>
@@ -100,6 +100,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
                 <button onClick={() => onRemove(option.portId)} className="deleteButton">
                   X
                 </button>
+                <span>{index + 1}.</span>
                 <input
                   className="hadshanutInput"
                   type="text"

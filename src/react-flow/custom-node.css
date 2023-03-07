@@ -62,6 +62,7 @@
 .option {
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
   padding-inline-start: 16px;/*tokens.$spacing-xx-small*/
   margin-block-end: 16px;/*tokens.$spacing-xx-small*/
   width: 100%;
@@ -73,12 +74,19 @@
   border-radius: 8px; /*tokens.$radius-medium*/
   padding-block: 6px;
   padding-inline: 16px; /*tokens.$spacing-xx-small*/
+  outline: none;
   width: 75%;
   height: 1.1rem;
 }
 
+.hadshanutInput:hover {
+  width: 50%;
+  transition: width 0.6s ease-in-out;
+}
+
 .dottedLink {
   content: '';
+  width: 1.2rem;
   border: 1px dashed #9AD4F1;
 }
 
@@ -98,4 +106,8 @@
   width: 14px;
   transform: none;
   top: auto;
+}
+
+.deleteButton {
+  display: none;
 }
