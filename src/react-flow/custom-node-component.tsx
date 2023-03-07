@@ -93,7 +93,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
           options?.map((option, index) => {
             const isConnected = isPortConnected(option.portId);
             return (
-              <span key={option.portId} className="option">
+              <div key={option.portId} className="option">
                 <button onClick={() => handleRemove(option.portId)} className="deleteButton">
                   X
                 </button>
@@ -113,7 +113,7 @@ export const CustomNodeComponent = memo(({ data }: CustomNodeProps) => {
                   style={{left: -8}}
                   className={isConnected ? "portActive" : "portConnectable"}
                 />
-              </span>
+              </div>
             )
           })
         }
